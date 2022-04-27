@@ -221,38 +221,33 @@
 								<image>
 									<name>${project.groupId}/${project.artifactId}</name>
 									<build>
-										<from>quay.io/quarkus/ubi-quarkus-native-binary-s2i:1.0</from>
+										<from>registry.access.redhat.com/ubi8/ubi-minimal:8.5</from>
 										
 										<tags>
 											<tag>latest</tag>
 											<tag>${project.version}</tag>
 										</tags>
 
-										<!-- <env> <SRC_DIR>./target</SRC_DIR> </env> -->
-										<entryPoint>/application/${project.artifactId}-${project.version}-runner</entryPoint>
+										<entryPoint>/${project.artifactId}-${project.version}-runner</entryPoint>
 										<assembly>
-
 											<mode>dir</mode>
-											<targetDir>/application</targetDir>
-											<user>quarkus:root:quarkus</user>
+											<targetDir>/</targetDir>
 											<inline>
 												<id>customized-quarkus</id>
 												<files>
 													<file>
 														<source>target/${project.artifactId}-${project.version}-runner</source>
 														<outputDirectory>.</outputDirectory>
+														<fileMode>0755</fileMode>
 													</file>
 												</files>
-											</inline>
-										
+											</inline>										
 										</assembly>
 
 										<runCmds>
 											<!-- <run>chown 1001:root -R /application</run> -->
-											<run>ls /application -lha</run>
+											<run>chmod +x /${project.artifactId}-${project.version}-runner</run>
 										</runCmds>
-										<user>quarkus</user>
-
 									</build>
 								</image>
 							</images>

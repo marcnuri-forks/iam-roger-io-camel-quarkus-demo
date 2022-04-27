@@ -8,7 +8,7 @@ mvn  clean package -Pnative
 ## DEploy OCP 4
 
 ```
-oc:build oc:resource oc:apply -Popenshift
+./mvnw oc:build oc:resource oc:apply -Popenshift
 ```
 
 ## Schema de Banco de dados
