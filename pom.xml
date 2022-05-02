@@ -18,6 +18,7 @@
 		<quarkus.platform.group-id>com.redhat.quarkus.platform</quarkus.platform.group-id>
 		<quarkus.platform.version>2.2.5.SP1-redhat-00001</quarkus.platform.version>
 		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
+		<jkube.version>1.7.0</jkube.version>
 
 	</properties>
 
@@ -198,56 +199,50 @@
 				<quarkus.package.type>native</quarkus.package.type>
 			</properties>
 		</profile>
-		
-		
+
 		<!-- Added manually -->
 		<profile>
 			<id>openshift</id>
 			<properties>
-				<!-- <quarkus.package.type>native</quarkus.package.type> -->
-				<!-- <jkube.generator.name>quarkus</jkube.generator.name> -->
 				<jkube.build.strategy>docker</jkube.build.strategy>
 			</properties>
 			<build>
 				<plugins>
-
 					<plugin>
 						<groupId>org.eclipse.jkube</groupId>
 						<artifactId>openshift-maven-plugin</artifactId>
-						<version>1.7.0</version>
-						
+						<version>${jkube.version}</version>
 						<configuration>
 							<images>
 								<image>
 									<name>${project.groupId}/${project.artifactId}</name>
 									<build>
 										<from>registry.access.redhat.com/ubi8/ubi-minimal:8.5</from>
-										
 										<tags>
 											<tag>latest</tag>
 											<tag>${project.version}</tag>
 										</tags>
-
 										<entryPoint>/${project.artifactId}-${project.version}-runner</entryPoint>
 										<assembly>
 											<mode>dir</mode>
 											<targetDir>/</targetDir>
-											<inline>
-												<id>customized-quarkus</id>
-												<files>
-													<file>
-														<source>target/${project.artifactId}-${project.version}-runner</source>
-														<outputDirectory>.</outputDirectory>
-														<fileMode>0755</fileMode>
-													</file>
-												</files>
-											</inline>										
+											<excludeFinalOutputArtifact>true</excludeFinalOutputArtifact>
+											<layers>
+												<layer>
+													<id>native-quarkus</id>
+													<fileSets>
+														<fileSet>
+															<directory>target</directory>
+															<outputDirectory>./</outputDirectory>
+															<fileMode>0755</fileMode>
+															<includes>
+																<include>${project.artifactId}-${project.version}-runner</include>
+															</includes>
+														</fileSet>
+													</fileSets>
+												</layer>
+											</layers>
 										</assembly>
-
-										<runCmds>
-											<!-- <run>chown 1001:root -R /application</run> -->
-											<run>chmod +x /${project.artifactId}-${project.version}-runner</run>
-										</runCmds>
 									</build>
 								</image>
 							</images>
@@ -260,7 +255,6 @@
 							</enricher>
 						</configuration>
 					</plugin>
-
 				</plugins>
 			</build>
 		</profile>

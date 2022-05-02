@@ -5,7 +5,7 @@
 mvn  clean package -Pnative
 ```
 
-## DEploy OCP 4
+## Deploy OCP 4
 
 ```
 ./mvnw oc:build oc:resource oc:apply -Popenshift
